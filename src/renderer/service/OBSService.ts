@@ -16,9 +16,12 @@ class OBSService {
     const url = localStorage.getItem(obsUrl || '');
     const password = localStorage.getItem(obsPassword || '');
 
-    if (url && password) {
+    if (url !== '' && password !== '') {
       try {
-        const response = await this.obs.connect(url, password);
+        const response = await this.obs.connect(
+          url as string,
+          password as string,
+        );
         console.log('Connected to OBS:', response);
       } catch (error) {
         console.error('Failed to connect to OBS:', error);
