@@ -26,6 +26,7 @@ export const Settings: React.FC = () => {
           <input
             id="url"
             type="text"
+            placeholder="ex: ws://192.168.68.117:4455"
             value={url}
             onChange={(e) => setUrl(e.target.value)}
             style={styles.input}
