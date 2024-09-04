@@ -72,7 +72,7 @@ OBS Scheduler is an open-source Electron application designed to automate and sc
 
 ## Images and Videos
 
-![Video](https://github.com/user-attachments/assets/ccf65a32-5f9b-4920-a2d0-b68477df7560)
+![Video](https://github.com/user-attachments/assets/23c2c4ea-b4e7-4b28-8990-2bc67da85e47)
 
 <br>
 
