@@ -9,7 +9,17 @@ interface ScheduleOptions {
 }
 
 class ScheduleService {
+  private static instance: ScheduleService;
   private jobs: Map<string, CustomJob> = new Map();
+
+  private constructor() {}
+
+  static getInstance(): ScheduleService {
+    if (!this.instance) {
+      this.instance = new ScheduleService();
+    }
+    return this.instance;
+  }
 
   /**
    * Schedules a new job.
@@ -41,20 +51,20 @@ class ScheduleService {
    * Executes a job immediately.
    * @param name The name of the job to execute.
    */
-  executeSchedule(name: string): void {
+  executeSchedule = (name: string): void => {
     const job = this.jobs.get(name);
     if (!job) {
       throw new Error('Job not found.');
     }
     job.job.invoke();
     pubsub.publish('jobExecuted', job);
-  }
+  };
 
   /**
    * Deletes a scheduled job.
    * @param name The name of the job to delete.
    */
-  deleteSchedule(name: string): void {
+  deleteSchedule = (name: string): void => {
     const job = this.jobs.get(name);
     if (!job) {
       throw new Error('Job not found.');
@@ -62,7 +72,7 @@ class ScheduleService {
     job.job.cancel();
     this.jobs.delete(name);
     pubsub.publish('jobCancelled', job);
-  }
+  };
 
   /**
    * lists all scheduled jobs.
@@ -79,4 +89,5 @@ class ScheduleService {
   }
 }
 
-export default new ScheduleService();
+const scheduleService = ScheduleService.getInstance();
+export default scheduleService;

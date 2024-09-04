@@ -3,9 +3,10 @@ import { Task } from '../../types';
 
 interface TaskListProps {
   tasks: Task[];
+  onDelete: (taskId: string) => void;
 }
 
-const TaskList: React.FC<TaskListProps> = ({ tasks }) => {
+const TaskList: React.FC<TaskListProps> = ({ tasks, onDelete }) => {
   return (
     <div style={styles.container}>
       <h2 style={styles.taskHeader}>Tarefas Agendadas</h2>
@@ -14,6 +15,12 @@ const TaskList: React.FC<TaskListProps> = ({ tasks }) => {
           <p style={styles.taskName}>{task.name}</p>
           <p>Tipo: {task.type}</p>
           <p>Horário: {new Date(task.scheduledTime).toLocaleTimeString()}</p>
+          <button
+            onClick={() => onDelete(task.name)}
+            style={styles.deleteButton}
+          >
+            &#x2715;
+          </button>
         </div>
       ))}
     </div>
@@ -43,12 +50,28 @@ const styles: { [key: string]: CSSProperties } = {
     border: '1px solid #ccc',
     borderRadius: '10px',
     backgroundColor: 'white',
+    position: 'relative',
   },
   taskHeader: {
     textAlign: 'center',
   },
   taskName: {
     fontWeight: 'bold',
+  },
+  deleteButton: {
+    padding: '2px',
+    margin: 0,
+    top: '-10px',
+    right: '-10px',
+    cursor: 'pointer',
+    backgroundColor: '#ff4d4d',
+    color: 'white',
+    border: 'none',
+    borderRadius: '50%',
+    position: 'absolute',
+    fontSize: '10px',
+    width: '20px',
+    height: '20px',
   },
 };
 

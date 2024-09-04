@@ -1,6 +1,6 @@
 import React, { useState, CSSProperties } from 'react';
 import { useNavigate } from 'react-router-dom';
-import ScheduleService from '../../service/ScheduleService';
+import scheduleService from '../../service/ScheduleService';
 import OBSService from '../../service/OBSService';
 
 export const StartTransmission = () => {
@@ -16,7 +16,7 @@ export const StartTransmission = () => {
     scheduleTime.setHours(hours, minutes, 0, 0);
 
     try {
-      ScheduleService.createSchedule(eventName, {
+      scheduleService.createSchedule(eventName, {
         date: scheduleTime,
         task: () => OBSService.startTransmission(),
         type: 'Iniciar Transmissão',

@@ -1,6 +1,6 @@
 import React, { useState, CSSProperties } from 'react';
 import { useNavigate } from 'react-router-dom';
-import ScheduleService from '../../service/ScheduleService';
+import scheduleService from '../../service/ScheduleService';
 import OBSService from '../../service/OBSService';
 
 export const EndTransmission = () => {
@@ -14,7 +14,7 @@ export const EndTransmission = () => {
 
   const handleSubmit = (event: React.FormEvent) => {
     event.preventDefault();
-    ScheduleService.createSchedule(eventName, {
+    scheduleService.createSchedule(eventName, {
       date: scheduleTime,
       task: () => OBSService.endTransmission(),
       type: 'Encerrar Transmissão',

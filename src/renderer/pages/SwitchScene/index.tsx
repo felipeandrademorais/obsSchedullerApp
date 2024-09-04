@@ -1,7 +1,7 @@
 import React, { useState, useEffect, CSSProperties } from 'react';
 import { useNavigate } from 'react-router-dom';
 import OBSService from '../../service/OBSService';
-import ScheduleService from '../../service/ScheduleService';
+import scheduleService from '../../service/ScheduleService';
 
 export const SwitchScene = () => {
   const [selectedScene, setSelectedScene] = useState<string>('');
@@ -18,11 +18,11 @@ export const SwitchScene = () => {
     setIsLoading(true);
     try {
       const availableScenes = await OBSService.getScenes();
-      console.log('availableScenes: ', availableScenes);
       setScenes(availableScenes);
-      setIsLoading(false);
+      setSelectedScene(availableScenes[0].sceneName);
     } catch (error) {
-      console.error('Failed to fetch scenes:', error);
+      alert('Erro ao buscar cenas disponíveis');
+    } finally {
       setIsLoading(false);
     }
   };
@@ -33,7 +33,7 @@ export const SwitchScene = () => {
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    ScheduleService.createSchedule(`Trocar para cena -> ${selectedScene}`, {
+    scheduleService.createSchedule(`Trocar para -> ${selectedScene}`, {
       date: scheduleTime,
       task: () => OBSService.switchScene(selectedScene),
       type: 'Trocar de Cena',
@@ -49,7 +49,7 @@ export const SwitchScene = () => {
         <label style={styles.label}>
           Selecione a cena desejada:
           <select
-            value={selectedScene || scenes[0]?.sceneName}
+            value={selectedScene}
             onChange={(e) => setSelectedScene(e.target.value)}
             style={styles.select}
             disabled={isLoading}
@@ -60,7 +60,7 @@ export const SwitchScene = () => {
               </option>
             ))}
           </select>
-          {isLoading && <span style={styles.loading}>Loading...</span>}
+          {isLoading && <span style={styles.loading}>Carregando...</span>}
         </label>
         <label style={styles.label}>
           Hora de troca:

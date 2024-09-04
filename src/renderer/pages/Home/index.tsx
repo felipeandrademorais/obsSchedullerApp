@@ -1,7 +1,7 @@
 import React, { useState, useEffect, CSSProperties } from 'react';
 import { useNavigate } from 'react-router-dom';
 import TaskList from '../../components/TaskList';
-import ScheduleService from '../../service/ScheduleService';
+import scheduleService from '../../service/ScheduleService';
 import { Task } from '../../types';
 import { Aviso } from '../../components/Aviso';
 import { obsPassword, obsIp } from '../../constants';
@@ -12,7 +12,7 @@ export const Home: React.FC = () => {
   const [tasks, setTasks] = useState<Task[]>([]);
 
   useEffect(() => {
-    const updateTasks = () => setTasks(ScheduleService.listUpcomingJobs());
+    const updateTasks = () => setTasks(scheduleService.listUpcomingJobs());
 
     pubsub.subscribe('jobScheduled', updateTasks);
     pubsub.subscribe('jobCompleted', updateTasks);
@@ -53,7 +53,7 @@ export const Home: React.FC = () => {
             Configurações
           </button>
         </div>
-        <TaskList tasks={tasks} />
+        <TaskList tasks={tasks} onDelete={scheduleService.deleteSchedule} />
       </div>
     </div>
   );

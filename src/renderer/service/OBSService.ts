@@ -27,7 +27,6 @@ class OBSService {
   public async startTransmission() {
     try {
       await this.obs.call('StartStream');
-      console.log('Transmission started.');
     } catch (error) {
       console.error('Error starting transmission:', error);
     }
@@ -36,7 +35,6 @@ class OBSService {
   public async getScenes(): Promise<any[]> {
     try {
       const { scenes } = await this.obs.call('GetSceneList');
-      console.log('Scenes retrieved:', scenes);
       return scenes;
     } catch (error) {
       console.error('Error retrieving scenes:', error);
@@ -47,7 +45,6 @@ class OBSService {
   public async switchScene(sceneName: string) {
     try {
       await this.obs.call('SetCurrentProgramScene', { sceneName: sceneName });
-      console.log(`Switched to scene: ${sceneName}`);
     } catch (error) {
       console.error('Error switching scenes:', error);
     }
@@ -56,7 +53,6 @@ class OBSService {
   public async endTransmission() {
     try {
       await this.obs.call('StopStream');
-      console.log('Transmission ended.');
     } catch (error) {
       console.error('Error ending transmission:', error);
     }
