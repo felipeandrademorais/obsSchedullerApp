@@ -1,5 +1,5 @@
 import OBSWebSocket from 'obs-websocket-js';
-import { obsUrl, obsPassword } from '../constants';
+import { obsPort, obsIp, obsPassword } from '../constants';
 
 class OBSService {
   private obs: OBSWebSocket;
@@ -10,21 +10,16 @@ class OBSService {
   }
 
   public async connect() {
-    //const url = 'ws://192.168.68.117:4455';
-    //const password = 'password';
-
-    const url = localStorage.getItem(obsUrl || '');
+    const ip = localStorage.getItem(obsIp || '');
+    const port = localStorage.getItem(obsPort || '');
     const password = localStorage.getItem(obsPassword || '');
+    const url = `ws://${ip}:${port}`;
 
-    if (url !== '' && password !== '') {
+    if (ip !== '' && port !== '' && password !== '') {
       try {
-        const response = await this.obs.connect(
-          url as string,
-          password as string,
-        );
-        console.log('Connected to OBS:', response);
+        await this.obs.connect(url, password as string);
       } catch (error) {
-        console.error('Failed to connect to OBS:', error);
+        return error;
       }
     }
   }

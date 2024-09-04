@@ -1,34 +1,68 @@
 import React, { CSSProperties, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { obsPassword, obsUrl } from '../../constants';
+import { obsPassword, obsIp, obsPort } from '../../constants';
+import OBSService from '../../service/OBSService';
+import { Aviso } from '../../components/Aviso';
+import { LoadingSpinner } from '../../components/LoadingSpinner';
 
 export const Settings: React.FC = () => {
   const navigate = useNavigate();
 
-  const [url, setUrl] = useState<string>(localStorage.getItem(obsUrl) ?? '');
+  const [loading, setLoading] = useState<boolean>(false);
+  const [aviso, setAviso] = useState<string | null>(null);
+  const [ip, setIp] = useState<string>(localStorage.getItem(obsIp) ?? '');
+  const [port, setPort] = useState<string>(localStorage.getItem(obsPort) ?? '');
   const [password, setPassword] = useState<string>(
     localStorage.getItem(obsPassword) ?? '',
   );
 
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+    setLoading(true);
+
     event.preventDefault();
-    localStorage.setItem(obsUrl, url);
+    localStorage.setItem(obsIp, ip);
+    localStorage.setItem(obsPort, port);
     localStorage.setItem(obsPassword, password);
-    alert('Configurações salvas com sucesso!');
+
+    await OBSService.connect()
+      .then((response) => {
+        if (response instanceof Error) {
+          setAviso(
+            'Houve um erro ao conectar ao OBS. Verifique se as informações estão corretas.',
+          );
+        } else {
+          alert('Conectado com sucesso!');
+          navigate('/');
+        }
+      })
+      .finally(() => {
+        setLoading(false);
+      });
   };
 
   return (
     <div style={styles.formContainer}>
       <form onSubmit={handleSubmit} style={styles.form}>
         <h1>Configurações</h1>
-        <label style={styles.label} htmlFor="url">
-          OBS URL:
+        <label style={styles.label} htmlFor="ip">
+          OBS IP:
           <input
-            id="url"
+            id="ip"
             type="text"
-            placeholder="ex: ws://192.168.68.117:4455"
-            value={url}
-            onChange={(e) => setUrl(e.target.value)}
+            placeholder="ex: 192.168.68.117"
+            value={ip}
+            onChange={(e) => setIp(e.target.value)}
+            style={styles.input}
+          />
+        </label>
+        <label style={styles.label} htmlFor="porta">
+          OBS PORTA:
+          <input
+            id="porta"
+            type="text"
+            placeholder="ex: 4455"
+            value={port}
+            onChange={(e) => setPort(e.target.value)}
             style={styles.input}
           />
         </label>
@@ -44,7 +78,7 @@ export const Settings: React.FC = () => {
         </label>
         <div style={styles.buttonContainer}>
           <button type="submit" style={styles.button}>
-            Salvar
+            {loading ? <LoadingSpinner /> : 'Conectar'}
           </button>
           <button
             type="button"
@@ -55,6 +89,9 @@ export const Settings: React.FC = () => {
           </button>
         </div>
       </form>
+      <div style={{ marginTop: '2rem' }}>
+        {aviso && <Aviso message={aviso} />}
+      </div>
     </div>
   );
 };
@@ -65,6 +102,7 @@ const styles: { [key: string]: CSSProperties } = {
     flexDirection: 'column',
     alignItems: 'center',
     padding: '20px',
+    position: 'relative',
   },
   form: {
     display: 'flex',

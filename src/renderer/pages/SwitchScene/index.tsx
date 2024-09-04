@@ -33,7 +33,7 @@ export const SwitchScene = () => {
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    ScheduleService.createSchedule(selectedScene, {
+    ScheduleService.createSchedule(`Trocar para cena -> ${selectedScene}`, {
       date: scheduleTime,
       task: () => OBSService.switchScene(selectedScene),
       type: 'Trocar de Cena',
@@ -49,7 +49,7 @@ export const SwitchScene = () => {
         <label style={styles.label}>
           Selecione a cena desejada:
           <select
-            value={selectedScene}
+            value={selectedScene || scenes[0]?.sceneName}
             onChange={(e) => setSelectedScene(e.target.value)}
             style={styles.select}
             disabled={isLoading}

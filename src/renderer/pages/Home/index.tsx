@@ -4,26 +4,36 @@ import TaskList from '../../components/TaskList';
 import ScheduleService from '../../service/ScheduleService';
 import { Task } from '../../types';
 import { Aviso } from '../../components/Aviso';
-import { obsPassword, obsUrl } from '../../constants';
+import { obsPassword, obsIp } from '../../constants';
+import { pubsub } from '../../service/PubSub';
 
 export const Home: React.FC = () => {
   const navigate = useNavigate();
   const [tasks, setTasks] = useState<Task[]>([]);
 
   useEffect(() => {
-    loadScheduledTasks();
-  }, []);
+    const updateTasks = () => setTasks(ScheduleService.listUpcomingJobs());
 
-  const loadScheduledTasks = () => {
-    const upcomingTasks = ScheduleService.listUpcomingJobs();
-    setTasks(upcomingTasks);
-  };
+    pubsub.subscribe('jobScheduled', updateTasks);
+    pubsub.subscribe('jobCompleted', updateTasks);
+    pubsub.subscribe('jobCancelled', updateTasks);
+
+    updateTasks();
+
+    return () => {
+      pubsub.unsubscribe('jobScheduled', updateTasks);
+      pubsub.unsubscribe('jobCompleted', updateTasks);
+      pubsub.unsubscribe('jobCancelled', updateTasks);
+    };
+  }, []);
 
   return (
     <div style={styles.container}>
       <h1>OBS Task Scheduler</h1>
-      {localStorage.getItem(obsUrl) === null ||
-        (localStorage.getItem(obsPassword) === null && <Aviso />)}
+      {localStorage.getItem(obsIp) === null ||
+        (localStorage.getItem(obsPassword) === null && (
+          <Aviso message={null} />
+        ))}
       <div style={styles.buttonsContainer}>
         <div style={styles.buttonGroup}>
           <button onClick={() => navigate('/start-transmission')}>
@@ -51,7 +61,7 @@ export const Home: React.FC = () => {
 
 const styles: { [key: string]: CSSProperties } = {
   container: {
-    maxWidth: '950px',
+    maxWidth: '1024px',
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'center',
@@ -69,6 +79,7 @@ const styles: { [key: string]: CSSProperties } = {
     justifyContent: 'center',
     gap: '13px',
     margin: '20px',
+    width: '100%',
     height: '100%',
   },
 };

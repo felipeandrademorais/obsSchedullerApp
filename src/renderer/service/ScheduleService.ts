@@ -1,5 +1,6 @@
-import { scheduleJob, Job, RecurrenceRule } from 'node-schedule';
+import { scheduleJob, RecurrenceRule } from 'node-schedule';
 import { Task, CustomJob } from '../types';
+import { pubsub } from './PubSub';
 
 interface ScheduleOptions {
   date: Date | RecurrenceRule;
@@ -8,11 +9,7 @@ interface ScheduleOptions {
 }
 
 class ScheduleService {
-  private jobs: Map<string, CustomJob>;
-
-  constructor() {
-    this.jobs = new Map();
-  }
+  private jobs: Map<string, CustomJob> = new Map();
 
   /**
    * Schedules a new job.
@@ -23,6 +20,7 @@ class ScheduleService {
     const job = scheduleJob(options.date, async () => {
       try {
         await options.task();
+        pubsub.publish('jobCompleted', { name });
       } catch (error) {
         console.error(`Error executing task '${name}':`, error);
       }
@@ -36,7 +34,7 @@ class ScheduleService {
     };
 
     this.jobs.set(name, customJob);
-    console.log(`Job '${name}' scheduled.`);
+    pubsub.publish('jobScheduled', customJob);
   }
 
   /**
@@ -49,7 +47,7 @@ class ScheduleService {
       throw new Error('Job not found.');
     }
     job.job.invoke();
-    console.log(`Job '${name}' executed.`);
+    pubsub.publish('jobExecuted', job);
   }
 
   /**
@@ -63,7 +61,7 @@ class ScheduleService {
     }
     job.job.cancel();
     this.jobs.delete(name);
-    console.log(`Job '${name}' deleted.`);
+    pubsub.publish('jobCancelled', job);
   }
 
   /**

@@ -1,9 +1,13 @@
 import { CSSProperties } from 'react';
 
-export const Aviso = () => {
+export const Aviso = ({ message }: { message: string | null }) => {
   return (
     <div style={styles.container}>
-      <p>Você deve informar a URL e Senha do OBS na lista de configurações</p>
+      {message ? (
+        <p>{message}</p>
+      ) : (
+        <p>Você deve informar a URL e Senha do OBS na lista de configurações</p>
+      )}
     </div>
   );
 };
