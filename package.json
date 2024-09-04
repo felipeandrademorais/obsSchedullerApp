@@ -1,5 +1,5 @@
 {
-  "description": "An app to manage obs on specific time",
+  "description": "Obs Scheduler App is a software developed to automate Start, Switch Scenes and End a transmission on OBS.",
   "keywords": [
     "electron",
     "boilerplate",
